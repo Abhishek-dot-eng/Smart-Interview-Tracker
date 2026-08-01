@@ -7,7 +7,8 @@ import PublicRoute from "./components/PublicRoute";
 import {
 BrowserRouter,
 Routes,
-Route
+Route,
+Navigate
 } from "react-router-dom";
 
 
@@ -20,6 +21,13 @@ return(
 
 <Routes>
 
+<Route 
+    path="/" 
+    element={
+        <Navigate to="/login" 
+        />
+    }
+/>
 
 <Route
     path="/login"

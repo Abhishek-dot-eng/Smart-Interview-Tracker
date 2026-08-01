@@ -28,8 +28,7 @@ public class SecurityConfig {
 
 
         return http
-                .cors(cors -> {
-                })
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
 
                 .authorizeHttpRequests(auth -> auth
@@ -64,7 +63,10 @@ public class SecurityConfig {
 
 
         configuration.setAllowedOrigins(
-                List.of("http://localhost:5173")
+                List.of(
+                        "http://localhost:5173",
+                        "https://smart-interview-tracker-gkjm.vercel.app"
+                )
         );
 
 

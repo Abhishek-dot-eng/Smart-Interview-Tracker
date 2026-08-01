@@ -1,5 +1,5 @@
 import {useState,useContext} from "react";
-import API from "../api/axios";
+import { loginUser } from "../services/authService";
 import {AuthContext} from "../auth/AuthContext";
 import {useNavigate} from "react-router-dom";
 
@@ -23,8 +23,7 @@ e.preventDefault();
 
 try{
 
-const response = await API.post(
-"/auth/login",
+const response = await loginUser(
 {
 email,
 password

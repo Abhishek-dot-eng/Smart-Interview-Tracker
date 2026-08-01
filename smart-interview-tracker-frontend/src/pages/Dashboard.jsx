@@ -4,6 +4,20 @@ import { useContext } from "react";
 import { AuthContext } from "../auth/AuthContext";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import Loader from "../components/Loader";
+import ErrorMessage from "../components/ErrorMessage";
+import { getDashboard } from "../services/dashboardService";
+import StatCard from "../components/StatCard";
+import UpcomingReminders from "../components/UpcomingReminders";
+import RecentInterviews from "../components/RecentInterviews";
+import DashboardCard from "../components/DashboardCard";
+import InterviewStatusChart from "../components/InterviewStatusChart";
+import {
+    getUpcomingReminders,
+    getRecentInterviews
+} from "../api/dashboardApi";
+import useLoading from "../hooks/useLoading";
+import getErrorMessage from "../utils/getErrorMessage";
 
 
 function Dashboard(){
@@ -21,17 +35,68 @@ function Dashboard(){
     };
 
     const [dashboardData,setDashboardData] = useState(null);
+    const [upcomingReminders, setUpcomingReminders] = useState([]);
+    const [error, setError] = useState("");
+    const [reminders,setReminders] = useState([]);
+    const [recentInterviews, setRecentInterviews] = useState([]);
+    const {
+        loading,
+        startLoading,
+        stopLoading
+    } = useLoading(true);
 
+    const chartData = [
+        {
+            name: "Applied",
+            value: dashboardData?.applied || 0,
+        },
+        {
+            name: "Scheduled",
+            value: dashboardData?.scheduled || 0,
+        },
+        {
+            name: "Completed",
+            value: dashboardData?.completed || 0,
+        },
+        {
+            name: "Offer",
+            value: dashboardData?.offers || 0,
+        },
+        {
+            name: "Rejected",
+            value: dashboardData?.rejected || 0,
+        },
+    ];
+    
 
-    useEffect(()=>{
+        const fetchDashboard = async () => {
+            try {
+                startLoading();
+                setError("");
 
-        const fetchDashboard = async()=>{
+                const response = await getDashboard();
+                setDashboardData(response.data);
+
+            } catch (error) {
+
+                console.error(error);
+
+                toast.error(getErrorMessage(error));
+            } finally {
+                stopLoading();
+            }
+        };
+
+        const fetchUpcomingReminders = async()=>{
 
             try{
 
-                const response = await API.get("/dashboard");
+                const response =
+                    await getUpcomingReminders();
 
-                setDashboardData(response.data);
+
+                setReminders(response.data);
+
 
             }
             catch(error){
@@ -43,12 +108,42 @@ function Dashboard(){
         };
 
 
+
+        const fetchRecentInterviews = async()=>{
+
+            try{
+
+                const response =
+                    await getRecentInterviews();
+
+
+                setRecentInterviews(response.data);
+
+
+            }
+            catch(error){
+
+                console.log(error);
+
+            }
+
+        };
+
+
+    useEffect(()=>{
+
+
         fetchDashboard();
+
+        fetchUpcomingReminders();
+
+        fetchRecentInterviews();
 
 
     },[]);
 
-
+    if (loading) return <Loader />;
+    if (error) return <ErrorMessage message={error} />;
 
     if(!dashboardData){
 
@@ -60,52 +155,129 @@ function Dashboard(){
 
     }
 
+    
+
+
 
 
     return (
+
     <>
-        <Navbar />
 
-        <div className="p-6">
+    <Navbar />
 
-            <h1 className="text-3xl font-bold mb-6">
-                Dashboard
-            </h1>
+    <div className="w-full overflow-x-hidden p-4 md:p-6">
 
-            <button
-                onClick={handleLogout}
-                className="bg-red-500 text-white px-4 py-2 rounded"
-            >
-                Logout
-            </button>
 
-            <div className="grid grid-cols-3 gap-5">
+    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
 
-                <div className="border p-5 rounded">
-                    <h2 className="font-bold">Total Interviews</h2>
-                    <p className="text-2xl">
-                        {dashboardData.totalInterviews}
-                    </p>
-                </div>
+        <h1 className="text-3xl font-bold">
+            Dashboard
+        </h1>
 
-                <div className="border p-5 rounded">
-                    <h2 className="font-bold">Upcoming</h2>
-                    <p className="text-2xl">
-                        {dashboardData.upcoming}
-                    </p>
-                </div>
+        <button
+            onClick={handleLogout}
+            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+        >
+            Logout
+        </button>
 
-                <div className="border p-5 rounded">
-                    <h2 className="font-bold">Completed</h2>
-                    <p className="text-2xl">
-                        {dashboardData.completed}
-                    </p>
-                </div>
+    </div>
 
-            </div>
 
-        </div>
+
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-6">
+
+
+    <DashboardCard
+
+        title="Total Applications"
+
+        value={
+            dashboardData.totalApplications || 0
+        }
+
+    />
+
+
+    <DashboardCard
+
+        title="Interviews"
+
+       value={
+        dashboardData.scheduled || 0
+       }
+
+    />
+
+
+
+    <DashboardCard
+
+        title="Offers"
+
+        value={
+            dashboardData.offers || 0
+        }
+
+    />
+
+
+
+    <DashboardCard
+
+        title="Rejected"
+
+        value={
+            dashboardData.rejected || 0
+        }
+
+    />
+
+
+
+    <DashboardCard
+
+        title="Pending"
+
+        value={
+            dashboardData.pending || 0
+        }
+
+    />
+
+
+    </div>
+
+    <div className="mt-8 w-full overflow-hidden">
+
+        <InterviewStatusChart 
+            data={chartData}
+        />
+
+    </div>
+
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mt-8">
+
+
+        <UpcomingReminders
+            reminders={reminders}
+        />
+
+
+        <RecentInterviews
+            interviews={recentInterviews}
+        />
+
+
+    </div>
+
+
+    </div>
+
+
     </>
+
     );
 
 }

@@ -30,19 +30,49 @@ public class DashboardService {
 
         User currentUser = getCurrentUser();
 
-        long total = interviewRepository.countByUser(currentUser);
+        long totalApplications =
+                interviewRepository.countByUser(currentUser);
 
-        long upcoming = interviewRepository.countByUserAndStatus(currentUser, "UPCOMING");
+        long applied =
+                interviewRepository.countByUserAndStatus(
+                        currentUser,
+                        "Applied"
+                );
 
-        long completed = interviewRepository.countByUserAndStatus(currentUser, "COMPLETED");
+        long scheduled =
+                interviewRepository.countByUserAndStatus(
+                        currentUser,
+                        "Scheduled"
+                );
 
-        long rejected = interviewRepository.countByUserAndStatus(currentUser, "REJECTED");
+        long completed =
+                interviewRepository.countByUserAndStatus(
+                        currentUser,
+                        "Completed"
+                );
+
+        long offers =
+                interviewRepository.countByUserAndStatus(
+                        currentUser,
+                        "Offer"
+                );
+
+        long rejected =
+                interviewRepository.countByUserAndStatus(
+                        currentUser,
+                        "Rejected"
+                );
+
+        long pending = applied + scheduled;
 
         return new DashboardResponse(
-                total,
-                upcoming,
+                totalApplications,
+                applied,
+                scheduled,
                 completed,
-                rejected
+                offers,
+                rejected,
+                pending
         );
     }
 

@@ -1,8 +1,9 @@
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
-import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedRoute from "./routes/ProtectedRoute";
 import Interviews from "./pages/Interviews";
+import PublicRoute from "./components/PublicRoute";
 import {
 BrowserRouter,
 Routes,
@@ -14,21 +15,29 @@ function App(){
 
 return(
 
-<BrowserRouter>
+
 
 
 <Routes>
 
 
-<Route 
-path="/login"
-element={<Login/>}
+<Route
+    path="/login"
+    element={
+        <PublicRoute>
+            <Login />
+        </PublicRoute>
+    }
 />
 
 
 <Route
-path="/register"
-element={<Register/>}
+    path="/register"
+    element={
+        <PublicRoute>
+            <Register />
+        </PublicRoute>
+    }
 />
 
 <Route
@@ -52,7 +61,7 @@ element={<Register/>}
 </Routes>
 
 
-</BrowserRouter>
+
 
 )
 

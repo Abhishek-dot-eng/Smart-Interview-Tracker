@@ -1,5 +1,5 @@
 import {useState} from "react";
-import API from "../api/axios";
+import { registerUser } from "../services/authService";
 
 
 function Register(){
@@ -17,8 +17,7 @@ const register=async(e)=>{
 e.preventDefault();
 
 
-await API.post(
-"/auth/register",
+await registerUser(
 user
 );
 

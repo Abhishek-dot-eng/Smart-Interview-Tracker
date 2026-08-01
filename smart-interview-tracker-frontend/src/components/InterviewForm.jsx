@@ -51,9 +51,10 @@ function InterviewForm({ onAddInterview, selectedInterview, onUpdateInterview })
     };
 
     return (
+
         <form
             onSubmit={handleSubmit}
-            className="border p-6 rounded-lg shadow mb-6"
+            className="border p-4 md:p-6 rounded-lg shadow mb-6 w-full overflow-hidden"
         >
 
             <h2 className="text-2xl font-bold mb-4">
@@ -86,16 +87,17 @@ function InterviewForm({ onAddInterview, selectedInterview, onUpdateInterview })
             <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                className="border p-2 w-full mb-4 rounded"
+                className="border p-2 w-full max-w-full mb-4 rounded"
             >
                 <option>Applied</option>
                 <option>Interview Scheduled</option>
+                <option>Offer</option>
                 <option>Completed</option>
                 <option>Rejected</option>
             </select>
 
             <button
-                className="bg-blue-600 text-white px-4 py-2 rounded"
+                className="bg-blue-600 text-white px-4 py-2 rounded w-full sm:w-auto"
             >
                 {selectedInterview ? "Update Interview" : "Save Interview"}
             </button>

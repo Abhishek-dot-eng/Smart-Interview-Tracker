@@ -1,4 +1,7 @@
 package com.abhishek.smart_interview_tracker_backend.service;
+
+import com.abhishek.smart_interview_tracker_backend.dto.InterviewResponseDTO;
+import com.abhishek.smart_interview_tracker_backend.dto.InterviewRequestDTO;
 import com.abhishek.smart_interview_tracker_backend.entity.User;
 import com.abhishek.smart_interview_tracker_backend.entity.Interview;
 import com.abhishek.smart_interview_tracker_backend.repository.InterviewRepository;
@@ -23,26 +26,60 @@ public class InterviewService {
     private UserRepository userRepository;
 
     // Save Interview
-    public Interview saveInterview(Interview interview) {
+    public InterviewResponseDTO saveInterview(
+            InterviewRequestDTO request
+    ){
 
         User currentUser = getCurrentUser();
+
+
+        Interview interview = new Interview();
+
+        interview.setCompany(request.getCompany());
+
+        interview.setRole(request.getRole());
+
+        interview.setInterviewDate(
+                request.getInterviewDate()
+        );
+
+        interview.setStatus(
+                request.getStatus()
+        );
+
+        interview.setNotes(
+                request.getNotes()
+        );
+
 
         interview.setUser(currentUser);
 
-        return interviewRepository.save(interview);
+
+        Interview savedInterview =
+                interviewRepository.save(interview);
+
+
+        return convertToDTO(savedInterview);
     }
 
     // Get all Interviews of the logged-in user
-    public List<Interview> getAllInterviews() {
+    public List<InterviewResponseDTO> getAllInterviews(){
 
         User currentUser = getCurrentUser();
 
-        return interviewRepository.findByUser(currentUser);
+        return interviewRepository
+                .findByUser(currentUser)
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
     }
 
     // Get Interview by ID
-    public Interview getInterviewById(Long id) {
-        return getOwnedInterview(id);
+    public InterviewResponseDTO getInterviewById(Long id){
+
+        Interview interview = getOwnedInterview(id);
+
+        return convertToDTO(interview);
     }
 
     // Delete Interview
@@ -84,17 +121,41 @@ public class InterviewService {
     }
 
     // Update Interview
-    public Interview updateInterview(Long id, Interview updatedInterview) {
+    public InterviewResponseDTO updateInterview(
+            Long id,
+            InterviewRequestDTO request
+    ){
 
-        Interview interview = getOwnedInterview(id);
+        Interview existingInterview =
+                getOwnedInterview(id);
 
-        interview.setCompany(updatedInterview.getCompany());
-        interview.setRole(updatedInterview.getRole());
-        interview.setInterviewDate(updatedInterview.getInterviewDate());
-        interview.setStatus(updatedInterview.getStatus());
-        interview.setNotes(updatedInterview.getNotes());
 
-        return interviewRepository.save(interview);
+        existingInterview.setCompany(
+                request.getCompany()
+        );
+
+        existingInterview.setRole(
+                request.getRole()
+        );
+
+        existingInterview.setInterviewDate(
+                request.getInterviewDate()
+        );
+
+        existingInterview.setStatus(
+                request.getStatus()
+        );
+
+        existingInterview.setNotes(
+                request.getNotes()
+        );
+
+
+        Interview updatedInterview =
+                interviewRepository.save(existingInterview);
+
+
+        return convertToDTO(updatedInterview);
     }
 
 
@@ -124,6 +185,27 @@ public class InterviewService {
 
         // Execute the query
         return interviewRepository.findAll(specification);
+    }
+
+    public List<Interview> getRecentInterviews(User user){
+
+        return interviewRepository
+                .findTop5ByUserOrderByInterviewDateDesc(user);
+
+    }
+
+    private InterviewResponseDTO convertToDTO(Interview interview){
+
+        return new InterviewResponseDTO(
+
+                interview.getId(),
+                interview.getCompany(),
+                interview.getRole(),
+                interview.getInterviewDate(),
+                interview.getStatus(),
+                interview.getNotes()
+
+        );
     }
 
 }

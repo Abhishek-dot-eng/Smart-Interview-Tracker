@@ -8,19 +8,43 @@ import {
 } from "../api/interviewApi";
 import Navbar from "../components/Navbar";
 import InterviewForm from "../components/InterviewForm";
+import Reminder from "../components/Reminder";
+import Loader from "../components/Loader";
+import ErrorMessage from "../components/ErrorMessage";
+import EmptyState from "../components/EmptyState";
+import InterviewCard from "../components/InterviewCard";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+import useLoading from "../hooks/useLoading";
+import getErrorMessage from "../utils/getErrorMessage";
 
 function Interviews() {
 
     const [interviews, setInterviews] = useState([]);
     const [selectedInterview, setSelectedInterview] = useState(null);
+    // const [company, setCompany] = useState("");
+    // const [role, setRole] = useState("");
+    // const [status, setStatus] = useState("");
+    // const [from, setFrom] = useState("");
+    // const [to, setTo] = useState("");
+    // const [upcoming, setUpcoming] = useState(false);
+    const {
+        loading,
+        startLoading,
+        stopLoading
+    } = useLoading(true);
+    const [error, setError] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
+    const [statusFilter, setStatusFilter] = useState("");
+    const [sortOrder, setSortOrder] = useState("newest");
+    const [currentPage, setCurrentPage] = useState(1);
+    const interviewsPerPage = 5;
 
-    const [company, setCompany] = useState("");
-    const [role, setRole] = useState("");
-    const [status, setStatus] = useState("");
-    const [from, setFrom] = useState("");
-    const [to, setTo] = useState("");
-    const [upcoming, setUpcoming] = useState(false);
-    const [loading, setLoading] = useState(false);
+    useEffect(()=>{
+
+        setCurrentPage(1);
+
+    },[searchTerm,statusFilter,sortOrder]);
 
     useEffect(() => {
         loadInterviews();
@@ -30,7 +54,8 @@ function Interviews() {
 
     try {
 
-        setLoading(true);
+        startLoading();
+        setError("");
 
         const response = await getAllInterviews();
 
@@ -39,39 +64,59 @@ function Interviews() {
     } catch(error) {
 
         console.error(error);
+        toast.error(getErrorMessage(error));
 
     } finally {
 
-        setLoading(false);
+        stopLoading();
 
     }
     };
 
     const handleAddInterview = async (interviewData) => {
-    try {
-        await createInterview(interviewData);
+        try {
+            await createInterview(interviewData);
+            toast.success("Interview added successfully");
 
-        // Reload the list after adding
-        loadInterviews();
+            // Reload the list after adding
+            loadInterviews();
 
-    } catch (error) {
-        console.log(error);
-    }
-    };
+        } catch (error) {
+            console.log(error);
+            toast.error("Failed to add interview");
+        }
+        };
 
-    const handleDeleteInterview = async (id) => {
+        const handleDeleteInterview = async (id) => {
 
-    try {
+        const result = await Swal.fire({
+            title: "Delete Interview?",
+            text: "This action cannot be undone.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Delete",
+            cancelButtonText: "Cancel"
+        });
 
-        await deleteInterview(id);
+        if (!result.isConfirmed) {
+            return;
+        }
 
-        loadInterviews();
+        try {
 
-    } catch(error){
+            await deleteInterview(id);
 
-        console.log(error);
+            toast.success("Interview deleted successfully");
 
-    }
+            loadInterviews();
+
+        } catch(error){
+
+            console.log(error);
+
+            toast.error("Failed to delete interview");
+
+        }
 
     };
 
@@ -81,6 +126,8 @@ function Interviews() {
 
         await updateInterview(id,data);
 
+        toast.success("Interview updated successfully");
+
         setSelectedInterview(null);
 
         loadInterviews();
@@ -89,6 +136,8 @@ function Interviews() {
     catch(error){
 
         console.log(error);
+
+        toast.error("Failed to update interview");
 
     }
 
@@ -135,6 +184,73 @@ function Interviews() {
 
     };
 
+    const filteredInterviews = interviews
+        .filter((interview)=>{
+
+            const matchesSearch =
+                interview.company
+                .toLowerCase()
+                .includes(searchTerm.toLowerCase())
+                ||
+                interview.role
+                .toLowerCase()
+                .includes(searchTerm.toLowerCase());
+
+
+            const matchesStatus =
+                statusFilter === ""
+                ||
+                interview.status === statusFilter;
+
+
+            return matchesSearch && matchesStatus;
+
+        })
+        .sort((a,b)=>{
+
+
+            const dateA = new Date(a.interviewDate);
+            const dateB = new Date(b.interviewDate);
+
+
+            if(sortOrder === "newest"){
+                return dateB - dateA;
+            }
+            else{
+                return dateA - dateB;
+            }
+
+    });
+
+    const indexOfLastInterview =
+        currentPage * interviewsPerPage;
+
+
+    const indexOfFirstInterview =
+        indexOfLastInterview - interviewsPerPage;
+
+
+    const currentInterviews =
+        filteredInterviews.slice(
+            indexOfFirstInterview,
+            indexOfLastInterview
+        );
+
+
+    const totalPages =
+        Math.ceil(
+            filteredInterviews.length /
+            interviewsPerPage
+        );
+
+    if (loading) return <Loader />;
+
+    if (error) return <ErrorMessage message={error} />;
+
+    if (interviews.length === 0) {
+        return <EmptyState message="No interviews found." />;
+    }
+
     return (
     <>
         <Navbar />
@@ -146,156 +262,161 @@ function Interviews() {
                 onUpdateInterview={handleUpdateInterview}
             />
 
-            <div className="bg-white p-4 rounded-lg shadow-md mb-6">
+            <h1 className="text-3xl font-bold mb-6">
+                Interviews
+            </h1>
 
-                <h2 className="text-xl font-semibold mb-4">
-                    Search & Filters
-                </h2>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="flex flex-col md:flex-row gap-4 mb-6">
 
-                    {/* Company */}
-                    <input
-                        type="text"
-                        placeholder="Company"
-                        value={company}
-                        onChange={(e) => setCompany(e.target.value)}
-                        className="border rounded px-3 py-2"
-                    />
+                <input
+                    type="text"
+                    placeholder="Search company or role..."
+                    value={searchTerm}
+                    onChange={(e)=>setSearchTerm(e.target.value)}
+                    className="border rounded-lg p-2 flex-1"
+                />
 
-                    {/* Role */}
-                    <input
-                        type="text"
-                        placeholder="Job Role"
-                        value={role}
-                        onChange={(e) => setRole(e.target.value)}
-                        className="border rounded px-3 py-2"
-                    />
 
-                    {/* Status */}
-                    <select
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value)}
-                        className="border rounded px-3 py-2"
-                    >
-                        <option value="">All Status</option>
-                        <option value="Applied">Applied</option>
-                        <option value="Scheduled">Scheduled</option>
-                        <option value="Completed">Completed</option>
-                        <option value="Offer">Offer</option>
-                        <option value="Rejected">Rejected</option>
-                    </select>
+                <select
+                    value={statusFilter}
+                    onChange={(e)=>setStatusFilter(e.target.value)}
+                    className="border rounded-lg p-2"
+                >
 
-                    {/* From Date */}
-                    <input
-                        type="date"
-                        value={from}
-                        onChange={(e) => setFrom(e.target.value)}
-                        className="border rounded px-3 py-2"
-                    />
+                    <option value="">
+                        All Status
+                    </option>
 
-                    {/* To Date */}
-                    <input
-                        type="date"
-                        value={to}
-                        onChange={(e) => setTo(e.target.value)}
-                        className="border rounded px-3 py-2"
-                    />
+                    <option value="Applied">
+                        Applied
+                    </option>
 
-                    {/* Upcoming */}
-                    <label className="flex items-center gap-2">
-                        <input
-                            type="checkbox"
-                            checked={upcoming}
-                            onChange={(e) => setUpcoming(e.target.checked)}
-                        />
-                        Upcoming Interviews
-                    </label>
+                    <option value="Scheduled">
+                        Scheduled
+                    </option>
 
-                </div>
+                    <option value="Offer">
+                        Offer
+                    </option>
 
-                <div className="mt-4 flex gap-3">
+                    <option value="Completed">
+                        Completed
+                    </option>
 
-                    <button
-                        onClick={handleSearch}
-                        disabled={loading}
-                        className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
-                    >
-                        {loading ? "Searching..." : "Search"}
-                    </button>
+                    <option value="Rejected">
+                        Rejected
+                    </option>
 
-                    <button
-                        onClick={handleReset}
-                        disabled={loading}
-                        className="bg-gray-500 text-white px-4 py-2 rounded disabled:opacity-50"
-                    >
-                        Reset
-                    </button>
+                </select>
 
-                </div>
+                <select
+                    value={sortOrder}
+                    onChange={(e)=>setSortOrder(e.target.value)}
+                    className="border rounded-lg p-2"
+                >
+
+                    <option value="newest">
+                        Newest First
+                    </option>
+
+                    <option value="oldest">
+                        Oldest First
+                    </option>
+
+                </select>
 
             </div>
+
 
             <p className="text-gray-600 mb-3">
                 Total Interviews: {interviews.length}
             </p>
 
-            <h1 className="text-3xl font-bold mb-6">
+            
 
-                Interviews
+            
+    {
+        currentInterviews.length === 0 ? (
 
-            </h1>
+            <EmptyState
+                icon="📂"
+                title="No interviews found"
+                message="Start by adding your first interview."
+            />
 
-            {
-                loading && (
-                    <p className="text-center text-gray-600">
-                        Loading interviews...
-                    </p>
-                )
+        ) : (
+
+            currentInterviews.map((interview)=>(
+
+                <InterviewCard
+
+                    key={interview.id}
+
+                    interview={interview}
+
+                    selectedInterview={
+                        selectedInterview
+                    }
+
+                    setSelectedInterview={
+                        setSelectedInterview
+                    }
+
+                    onDelete={
+                        handleDeleteInterview
+                    }
+
+                />
+
+            ))
+
+        )
+    }
+
+        <div className="flex justify-center gap-4 mt-6">
+
+
+        <button
+
+            disabled={currentPage === 1}
+
+            onClick={()=>
+                setCurrentPage(currentPage - 1)
             }
 
-            {
-                !loading && interviews.length === 0 && (
-                    <p className="text-center text-gray-600">
-                        No interviews found.
-                    </p>
-                )
+            className="bg-gray-500 text-white px-4 py-2 rounded disabled:opacity-50"
+
+        >
+            Previous
+        </button>
+
+
+
+        <span className="px-4 py-2">
+
+            Page {currentPage} of {totalPages || 1}
+
+        </span>
+
+
+
+        <button
+
+            disabled={currentPage === totalPages}
+
+            onClick={()=>
+                setCurrentPage(currentPage + 1)
             }
 
-            {
-                interviews.map((interview) => (
+            className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
 
-                    <div
-                        key={interview.id}
-                        className="border rounded-lg p-4 mb-4 shadow"
-                    >
+        >
+            Next
+        </button>
 
-                    <h2 className="text-xl font-semibold">
-                        {interview.company}
-                    </h2>
 
-                    <p>{interview.role}</p>
-
-                    <p>{interview.status}</p>
-
-                    <button
-                        onClick={() => setSelectedInterview(interview)}
-                        className="bg-blue-500 text-white px-3 py-1 rounded mt-3 mr-2"
-                    >
-                        Edit
-                    </button>
-                    
-                    <button
-                        onClick={() => handleDeleteInterview(interview.id)}
-                        className="bg-red-500 text-white px-3 py-1 rounded mt-3"
-                    >
-                        Delete
-                    </button>
-
-                    </div>
-
-                ))
-            }
+        </div>
 
         </div>
         </>

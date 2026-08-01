@@ -2,10 +2,17 @@ package com.abhishek.smart_interview_tracker_backend.controller;
 
 import com.abhishek.smart_interview_tracker_backend.entity.Interview;
 import com.abhishek.smart_interview_tracker_backend.service.InterviewService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import com.abhishek.smart_interview_tracker_backend.entity.User;
+import com.abhishek.smart_interview_tracker_backend.repository.UserRepository;
+import com.abhishek.smart_interview_tracker_backend.dto.InterviewResponseDTO;
+import com.abhishek.smart_interview_tracker_backend.dto.InterviewRequestDTO;
+
 
 import java.util.List;
 
@@ -16,21 +23,35 @@ public class InterviewController {
     @Autowired
     private InterviewService interviewService;
 
+    private final UserRepository userRepository;
+
+    public InterviewController(UserRepository userRepository){
+        this.userRepository = userRepository;
+    }
+
+
     // Create Interview
     @PostMapping
-    public Interview createInterview(@RequestBody Interview interview) {
-        return interviewService.saveInterview(interview);
+    public InterviewResponseDTO createInterview(
+            @Valid @RequestBody InterviewRequestDTO request
+    ){
+
+        return interviewService.saveInterview(request);
     }
 
     // Get All Interviews
     @GetMapping
-    public List<Interview> getAllInterviews() {
+    public List<InterviewResponseDTO> getAllInterviews(){
+
         return interviewService.getAllInterviews();
     }
 
     // Get Interview By ID
     @GetMapping("/{id}")
-    public Interview getInterviewById(@PathVariable Long id) {
+    public InterviewResponseDTO getInterviewById(
+            @PathVariable Long id
+    ){
+
         return interviewService.getInterviewById(id);
     }
 
@@ -42,10 +63,12 @@ public class InterviewController {
 
     // Update Interview
     @PutMapping("/{id}")
-    public Interview updateInterview(@PathVariable Long id,
-                                     @RequestBody Interview interview) {
+    public InterviewResponseDTO updateInterview(
+            @Valid
+            @PathVariable Long id,
+            @RequestBody InterviewRequestDTO request) {
 
-        return interviewService.updateInterview(id, interview);
+        return interviewService.updateInterview(id, request);
     }
 
     @GetMapping("/search")
@@ -70,5 +93,24 @@ public class InterviewController {
         );
 
         return ResponseEntity.ok(interviews);
+    }
+
+    @GetMapping("/recent")
+    public List<Interview> getRecentInterviews(
+            Authentication authentication
+    ){
+
+        User user =
+                userRepository.findByEmail(
+                                authentication.getName()
+                        )
+                        .orElseThrow(() ->
+                                new RuntimeException("User not found")
+                        );
+
+
+        return interviewService
+                .getRecentInterviews(user);
+
     }
 }

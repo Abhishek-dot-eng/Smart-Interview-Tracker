@@ -33,7 +33,16 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers("/api/auth/**")
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/error"
+                        )
+                        .permitAll()
+
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.OPTIONS,
+                                "/**"
+                        )
                         .permitAll()
 
                         .anyRequest()

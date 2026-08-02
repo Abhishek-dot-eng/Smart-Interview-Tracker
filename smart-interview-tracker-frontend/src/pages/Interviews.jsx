@@ -247,9 +247,7 @@ function Interviews() {
 
     if (error) return <ErrorMessage message={error} />;
 
-    if (interviews.length === 0) {
-        return <EmptyState message="No interviews found." />;
-    }
+    
 
     return (
     <>

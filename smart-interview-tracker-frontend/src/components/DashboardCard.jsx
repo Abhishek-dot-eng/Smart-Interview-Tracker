@@ -2,7 +2,15 @@ function DashboardCard({title,value}) {
 
     return (
 
-        <div className="bg-white p-5 rounded-lg shadow hover:shadow-lg transition duration-200">
+        <div className="
+        bg-white
+        dark:bg-gray-800
+        shadow
+        rounded-xl
+        p-5
+        text-gray-900
+        dark:text-white
+        ">
 
             <h3 className="text-gray-500 text-sm">
                 {title}

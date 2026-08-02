@@ -13,33 +13,63 @@ function InterviewCard({
     return (
 
         <div
-            className="border rounded-lg p-4 mb-4 shadow hover:shadow-lg transition duration-200 hover:-translate-y-1"
+            className="
+                border
+                dark:border-gray-700
+                rounded-lg
+                p-4
+                mb-4
+                shadow
+                hover:shadow-lg
+                transition
+                duration-200
+                hover:-translate-y-1
+                bg-white
+                dark:bg-gray-800
+                text-gray-900
+                dark:text-white
+            "
         >
 
-            <h2 className="text-xl font-semibold">
+            <h2 className="
+                text-xl
+                font-semibold
+                text-gray-900
+                dark:text-white
+            ">
                 {interview.company}
             </h2>
 
 
-            <p>
+            <p className="
+                text-gray-700
+                dark:text-gray-300
+            ">
                 {interview.role}
             </p>
 
 
-            <StatusBadge status={
-                interview.status
-                } 
+            <StatusBadge 
+                status={interview.status}
             />
 
 
-            <div className="mt-3">
+            <div className="mt-3 flex flex-wrap gap-2">
 
 
                 <button
                     onClick={() =>
                         setSelectedInterview(interview)
                     }
-                    className="bg-blue-500 text-white px-3 py-1 rounded mr-2"
+                    className="
+                        bg-blue-500
+                        hover:bg-blue-600
+                        text-white
+                        px-3
+                        py-1
+                        rounded
+                        transition
+                    "
                 >
                     Edit
                 </button>
@@ -50,7 +80,15 @@ function InterviewCard({
                     onClick={() =>
                         onDelete(interview.id)
                     }
-                    className="bg-red-500 text-white px-3 py-1 rounded mr-2"
+                    className="
+                        bg-red-500
+                        hover:bg-red-600
+                        text-white
+                        px-3
+                        py-1
+                        rounded
+                        transition
+                    "
                 >
                     Delete
                 </button>
@@ -65,7 +103,17 @@ function InterviewCard({
                             : interview.id
                         )
                     }
-                    className="bg-gray-500 text-white px-3 py-1 rounded"
+                    className="
+                        bg-gray-500
+                        hover:bg-gray-600
+                        dark:bg-gray-700
+                        dark:hover:bg-gray-600
+                        text-white
+                        px-3
+                        py-1
+                        rounded
+                        transition
+                    "
                 >
 
                     {

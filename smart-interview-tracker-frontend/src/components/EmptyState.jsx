@@ -5,7 +5,14 @@ function EmptyState({
 }) {
 
     return (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
+        <div className="
+            flex 
+            flex-col 
+            items-center 
+            justify-center 
+            py-16 
+            text-center
+        ">
 
             {/* Icon */}
             <div className="text-6xl mb-6">
@@ -14,13 +21,23 @@ function EmptyState({
 
 
             {/* Title */}
-            <h2 className="text-xl font-semibold text-gray-700 mb-3">
+            <h2 className="
+                text-xl 
+                font-semibold 
+                text-gray-700
+                dark:text-gray-200
+                mb-3
+            ">
                 {title}
             </h2>
 
 
             {/* Description */}
-            <p className="text-gray-500 max-w-md">
+            <p className="
+                text-gray-500
+                dark:text-gray-400
+                max-w-md
+            ">
                 {message}
             </p>
 

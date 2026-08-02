@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
     getAllInterviews,
     createInterview,
@@ -22,6 +22,7 @@ function Interviews() {
 
     const [interviews, setInterviews] = useState([]);
     const [selectedInterview, setSelectedInterview] = useState(null);
+    const formRef = useRef(null);
     // const [company, setCompany] = useState("");
     // const [role, setRole] = useState("");
     // const [status, setStatus] = useState("");
@@ -243,6 +244,21 @@ function Interviews() {
             interviewsPerPage
         );
 
+    const handleEditInterview = (interview) => {
+
+        setSelectedInterview(interview);
+
+        setTimeout(() => {
+
+            formRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+        }, 100);
+
+    };
+
     if (loading) return <Loader />;
 
     if (error) return <ErrorMessage message={error} />;
@@ -252,15 +268,29 @@ function Interviews() {
     return (
     <>
         <Navbar />
-        <div className="p-6">
+        <div className="
+            p-6
+            min-h-screen
+            bg-gray-50
+            dark:bg-gray-950
+            text-gray-900
+            dark:text-white
+        ">
 
             <InterviewForm
+                ref={formRef}
                 onAddInterview={handleAddInterview}
                 selectedInterview={selectedInterview}
                 onUpdateInterview={handleUpdateInterview}
             />
 
-            <h1 className="text-3xl font-bold mb-6">
+            <h1 className="
+                text-3xl
+                font-bold
+                mb-6
+                text-gray-900
+                dark:text-white
+            ">
                 Interviews
             </h1>
 
@@ -272,14 +302,34 @@ function Interviews() {
                     placeholder="Search company or role..."
                     value={searchTerm}
                     onChange={(e)=>setSearchTerm(e.target.value)}
-                    className="border rounded-lg p-2 flex-1"
+                    className="
+                        border
+                        rounded-lg
+                        p-2
+                        flex-1
+                        bg-white
+                        dark:bg-gray-800
+                        dark:border-gray-700
+                        text-gray-900
+                        dark:text-white
+                        placeholder-gray-500
+                    "
                 />
 
 
                 <select
                     value={statusFilter}
                     onChange={(e)=>setStatusFilter(e.target.value)}
-                    className="border rounded-lg p-2"
+                    className="
+                        border
+                        rounded-lg
+                        p-2
+                        bg-white
+                        dark:bg-gray-800
+                        dark:border-gray-700
+                        text-gray-900
+                        dark:text-white
+                    "
                 >
 
                     <option value="">
@@ -311,7 +361,16 @@ function Interviews() {
                 <select
                     value={sortOrder}
                     onChange={(e)=>setSortOrder(e.target.value)}
-                    className="border rounded-lg p-2"
+                    className="
+                        border
+                        rounded-lg
+                        p-2
+                        bg-white
+                        dark:bg-gray-800
+                        dark:border-gray-700
+                        text-gray-900
+                        dark:text-white
+                    "
                 >
 
                     <option value="newest">
@@ -327,7 +386,11 @@ function Interviews() {
             </div>
 
 
-            <p className="text-gray-600 mb-3">
+            <p className="
+                text-gray-600
+                dark:text-gray-400
+                mb-3
+            ">
                 Total Interviews: {interviews.length}
             </p>
 
@@ -358,7 +421,7 @@ function Interviews() {
                     }
 
                     setSelectedInterview={
-                        setSelectedInterview
+                        handleEditInterview
                     }
 
                     onDelete={
@@ -383,7 +446,15 @@ function Interviews() {
                 setCurrentPage(currentPage - 1)
             }
 
-            className="bg-gray-500 text-white px-4 py-2 rounded disabled:opacity-50"
+            className="
+                bg-gray-500
+                dark:bg-gray-700
+                text-white
+                px-4
+                py-2
+                rounded
+                disabled:opacity-50
+            "
 
         >
             Previous
@@ -391,7 +462,12 @@ function Interviews() {
 
 
 
-        <span className="px-4 py-2">
+        <span className="
+            px-4
+            py-2
+            text-gray-900
+            dark:text-white
+        ">
 
             Page {currentPage} of {totalPages || 1}
 
@@ -407,7 +483,15 @@ function Interviews() {
                 setCurrentPage(currentPage + 1)
             }
 
-            className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
+            className="
+                bg-blue-600
+                dark:bg-blue-700
+                text-white
+                px-4
+                py-2
+                rounded
+                disabled:opacity-50
+            "
 
         >
             Next

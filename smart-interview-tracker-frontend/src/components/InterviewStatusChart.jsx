@@ -8,14 +8,35 @@ import {
 } from "recharts";
 
 
-function InterviewStatusChart({data}) {
+function InterviewStatusChart({ data }) {
+
+
+    const isDark =
+        document.documentElement.classList.contains("dark");
 
 
     return (
 
-        <div className="bg-white rounded-xl shadow-md p-4 md:p-6 w-full overflow-hidden">
+        <div className="
+            bg-white
+            dark:bg-gray-800
+            rounded-xl
+            shadow-md
+            p-4
+            md:p-6
+            w-full
+            overflow-hidden
+            text-gray-900
+            dark:text-white
+        ">
 
-            <h2 className="text-xl font-semibold mb-4">
+            <h2 className="
+                text-xl
+                font-semibold
+                mb-4
+                text-gray-900
+                dark:text-white
+            ">
                 Interview Status Overview
             </h2>
 
@@ -25,6 +46,7 @@ function InterviewStatusChart({data}) {
                 <ResponsiveContainer width="100%" height="100%">
 
                     <PieChart>
+
 
                         <Pie
 
@@ -56,9 +78,22 @@ function InterviewStatusChart({data}) {
                         </Pie>
 
 
-                        <Tooltip />
+                        <Tooltip
+                            contentStyle={{
+                                backgroundColor: isDark ? "#1f2937" : "#ffffff",
+                                borderRadius: "8px",
+                                border: "none",
+                                color: isDark ? "#ffffff" : "#000000"
+                            }}
+                        />
 
-                        <Legend />
+
+                        <Legend
+                            wrapperStyle={{
+                                color: isDark ? "#ffffff" : "#000000"
+                            }}
+                        />
+
 
                     </PieChart>
 

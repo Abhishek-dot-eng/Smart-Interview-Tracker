@@ -166,18 +166,42 @@ function Dashboard(){
 
     <Navbar />
 
-    <div className="w-full overflow-x-hidden p-4 md:p-6">
+    <div className="
+        w-full 
+        overflow-x-hidden 
+        p-4 
+        md:p-6
+        bg-gray-50
+        dark:bg-gray-950
+        min-h-screen
+        text-gray-900
+        dark:text-white
+    ">
 
 
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
 
-        <h1 className="text-3xl font-bold">
+        <h1 className="
+            text-3xl 
+            font-bold
+            text-gray-900
+            dark:text-white
+        ">
             Dashboard
         </h1>
 
         <button
             onClick={handleLogout}
-            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+            className="
+            bg-red-500 
+            text-white 
+            px-4 
+            py-2 
+            rounded-lg 
+            hover:bg-red-600
+            dark:hover:bg-red-700
+            transition
+            "
         >
             Logout
         </button>
@@ -249,7 +273,15 @@ function Dashboard(){
 
     </div>
 
-    <div className="mt-8 w-full overflow-hidden">
+    <div className="
+    mt-8 
+    w-full 
+    overflow-hidden
+    bg-white
+    dark:bg-gray-800
+    rounded-xl
+    p-4
+    ">
 
         <InterviewStatusChart 
             data={chartData}

@@ -183,11 +183,28 @@ function Reminder({ interviewId }) {
     //     return <EmptyState message="No reminders found." />;
     // }
 
-    return (
+     return (
 
-        <div>
+        <div className="
+            mt-4
+            p-4
+            rounded-lg
+            bg-gray-50
+            dark:bg-gray-900
+            text-gray-900
+            dark:text-white
+        ">
 
-            <h3>Reminders</h3>
+
+            <h3 className="
+                text-xl
+                font-semibold
+                mb-4
+                text-gray-900
+                dark:text-white
+            ">
+                Reminders
+            </h3>
 
 
             <form 
@@ -195,8 +212,20 @@ function Reminder({ interviewId }) {
                 className="flex flex-col gap-3 mb-5"
             >
 
+
                 <input
-                    className="border rounded px-3 py-2"
+                    className="
+                        border
+                        dark:border-gray-700
+                        rounded
+                        px-3
+                        py-2
+                        bg-white
+                        dark:bg-gray-800
+                        text-gray-900
+                        dark:text-white
+                        placeholder-gray-500
+                    "
                     name="title"
                     placeholder="Title"
                     value={formData.title}
@@ -205,7 +234,18 @@ function Reminder({ interviewId }) {
 
 
                 <input
-                    className="border rounded px-3 py-2"
+                    className="
+                        border
+                        dark:border-gray-700
+                        rounded
+                        px-3
+                        py-2
+                        bg-white
+                        dark:bg-gray-800
+                        text-gray-900
+                        dark:text-white
+                        placeholder-gray-500
+                    "
                     name="description"
                     placeholder="Description"
                     value={formData.description}
@@ -214,7 +254,17 @@ function Reminder({ interviewId }) {
 
 
                 <input
-                    className="border rounded px-3 py-2"
+                    className="
+                        border
+                        dark:border-gray-700
+                        rounded
+                        px-3
+                        py-2
+                        bg-white
+                        dark:bg-gray-800
+                        text-gray-900
+                        dark:text-white
+                    "
                     type="date"
                     name="reminderDate"
                     value={formData.reminderDate}
@@ -224,7 +274,17 @@ function Reminder({ interviewId }) {
 
                 <button
                     type="submit"
-                    className="w-fit px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    className="
+                        w-fit
+                        px-4
+                        py-2
+                        bg-blue-500
+                        dark:bg-blue-700
+                        text-white
+                        rounded
+                        hover:bg-blue-600
+                        dark:hover:bg-blue-800
+                    "
                 >
                     {editingReminder ? "Update Reminder" : "Add Reminder"}
                 </button>
@@ -232,9 +292,19 @@ function Reminder({ interviewId }) {
 
                 {
                     editingReminder && (
+
                         <button
                             type="button"
-                            className="w-fit px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                            className="
+                                w-fit
+                                px-4
+                                py-2
+                                bg-gray-500
+                                dark:bg-gray-700
+                                text-white
+                                rounded
+                                hover:bg-gray-600
+                            "
                             onClick={() => {
                                 setEditingReminder(null);
                                 setFormData({
@@ -247,85 +317,146 @@ function Reminder({ interviewId }) {
                         >
                             Cancel
                         </button>
+
                     )
                 }
+
 
             </form>
 
 
-        <hr/>
+            <hr className="
+                border-gray-300
+                dark:border-gray-700
+                mb-4
+            "/>
 
-        {
-            loading ? (
 
-                <Loader />
+            {
+                loading ? (
 
-            ) : error ? (
+                    <Loader />
 
-                <ErrorMessage message={error} />
+                ) : error ? (
 
-            ) : reminders.length === 0 ? (
+                    <ErrorMessage message={error} />
 
-                <EmptyState
-                    icon="⏰"
-                    title="No reminders found"
-                    message="Create a reminder to stay on top of your interviews."
-                />
+                ) : reminders.length === 0 ? (
 
-            ) : (
+                    <EmptyState
+                        icon="⏰"
+                        title="No reminders found"
+                        message="Create a reminder to stay on top of your interviews."
+                    />
 
-                reminders.map((reminder) => (
+                ) : (
 
-                    <div
-                        key={reminder.id}
-                        className="border rounded-lg p-4 mb-4 shadow hover:shadow-lg transition duration-200 hover:-translate-y-1"
-                    >
+                    reminders.map((reminder) => (
 
-                        <h4>{reminder.title}</h4>
+                        <div
+                            key={reminder.id}
+                            className="
+                                border
+                                dark:border-gray-700
+                                rounded-lg
+                                p-4
+                                mb-4
+                                shadow
+                                hover:shadow-lg
+                                transition
+                                bg-white
+                                dark:bg-gray-800
+                                text-gray-900
+                                dark:text-white
+                            "
+                        >
 
-                        <p>{reminder.description}</p>
 
-                        <p>Date: {reminder.reminderDate}</p>
+                            <h4 className="
+                                font-semibold
+                                text-lg
+                            ">
+                                {reminder.title}
+                            </h4>
 
-                        <p>
-                            Status:
-                            {reminder.completed ? " Completed" : " Pending"}
-                        </p>
 
-                        <div className="flex gap-3 mt-3">
+                            <p className="dark:text-gray-300">
+                                {reminder.description}
+                            </p>
 
-                            {
-                                !reminder.completed &&
+
+                            <p className="dark:text-gray-300">
+                                Date: {reminder.reminderDate}
+                            </p>
+
+
+                            <p className="dark:text-gray-300">
+                                Status:
+                                {reminder.completed ? " Completed" : " Pending"}
+                            </p>
+
+
+                            <div className="flex gap-3 mt-3">
+
+
+                                {
+                                    !reminder.completed &&
+
+                                    <button
+                                        className="
+                                            px-3
+                                            py-1
+                                            bg-green-500
+                                            text-white
+                                            rounded
+                                            hover:bg-green-600
+                                        "
+                                        onClick={() => handleComplete(reminder.id)}
+                                    >
+                                        Complete
+                                    </button>
+                                }
+
+
                                 <button
-                                    className="px-3 py-1 bg-green-500 text-white rounded"
-                                    onClick={() => handleComplete(reminder.id)}
+                                    className="
+                                        px-3
+                                        py-1
+                                        bg-red-500
+                                        text-white
+                                        rounded
+                                        hover:bg-red-600
+                                    "
+                                    onClick={() => handleDelete(reminder.id)}
                                 >
-                                    Complete
+                                    Delete
                                 </button>
-                            }
 
-                            <button
-                                className="px-3 py-1 bg-red-500 text-white rounded"
-                                onClick={() => handleDelete(reminder.id)}
-                            >
-                                Delete
-                            </button>
 
-                            <button
-                                className="px-3 py-1 bg-blue-500 text-white rounded"
-                                onClick={() => handleEdit(reminder)}
-                            >
-                                Edit
-                            </button>
+                                <button
+                                    className="
+                                        px-3
+                                        py-1
+                                        bg-blue-500
+                                        text-white
+                                        rounded
+                                        hover:bg-blue-600
+                                    "
+                                    onClick={() => handleEdit(reminder)}
+                                >
+                                    Edit
+                                </button>
+
+
+                            </div>
+
 
                         </div>
 
-                    </div>
+                    ))
 
-                ))
-
-            )
-        }
+                )
+            }
 
 
         </div>
